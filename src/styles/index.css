@@ -11,6 +11,15 @@ body {
     height: 50px;
 }
 
+.icon {
+    opacity: 0;
+}
+
+.page:hover .icon {
+    opacity: 1;
+    cursor: pointer
+}
+
 .dot{
     width: 20px;
     height: 20px;
