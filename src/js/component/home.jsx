@@ -1,17 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { counter } from "@fortawesome/fontawesome-svg-core";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
 
-//create your first component
 const Home = () => {
 	const [todos, setTodos] = useState([{ id: 1, "text": "" }]) 
 	const [lastTodoIndex, setLastTodoIndex] = useState(-1);
 	const currentRef = useRef([]);
+	const [counter, setCounter] = useState(0);
 	
-	console.log(todos)
+
 	const handleTextChange = (event, index)=>{
 		const newTodo = [...todos]
 		newTodo[index].text = event.target.value;
@@ -54,13 +53,14 @@ const Home = () => {
 							placeholder={todos.length===1?"No tasks, add a task." : ""}
 							ref={(e)=>(currentRef.current[index] = e)}
 							onChange={(event)=>{handleTextChange(event, index)}}
-							onKeyUp={(event)=>{if(event.key==="Enter"){addNewTodo(index)}}}
+							onKeyUp={(event)=>{if(event.key==="Enter" && todo.text!==''){addNewTodo(index), setCounter(counter+1)}}}
 							disabled={index < lastTodoIndex}
 						/>
-						{index >= 0 && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
+						{index >= 0 && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id), todo.text!=='' && setCounter(counter-1)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
 					</div>
 			))}
-			<div className="bottom-block">{todos.length-1}</div>
+		
+			<div className="bottom-block">{counter===1 ? `${counter} item` : `${counter} items`} left</div>
 		</>
 	);
 };
