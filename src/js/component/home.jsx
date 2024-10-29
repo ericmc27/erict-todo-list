@@ -5,8 +5,7 @@ import { counter } from "@fortawesome/fontawesome-svg-core";
 
 
 const Home = () => {
-	const [todos, setTodos] = useState([{ id: 1, "text": "" }]) 
-	const [lastTodoIndex, setLastTodoIndex] = useState(-1);
+	const [todos, setTodos] = useState([{ id: 1, "text": "", disabled: false }]) 
 	const currentRef = useRef([]);
 	const [counter, setCounter] = useState(0);
 	
@@ -18,9 +17,9 @@ const Home = () => {
 	}
 
 	const addNewTodo = (index)=>{
-		const newTodo = [...todos, {id: todos[index].id+1, "text":""}]
+		let newTodo = [...todos, {id: todos[index].id+1, "text":"", disabled: false}]
+		newTodo[index].disabled = true;
 		setTodos(newTodo);
-		setLastTodoIndex(todos.length)
 	}
 
 	const removeTodo = (id)=>{
@@ -31,8 +30,6 @@ const Home = () => {
 		}else{
 			setTodos(newTodo);
 		}
-
-		setLastTodoIndex(todos.length-1)
 	}
 
 	useEffect(()=>{
@@ -54,9 +51,9 @@ const Home = () => {
 							ref={(e)=>(currentRef.current[index] = e)}
 							onChange={(event)=>{handleTextChange(event, index)}}
 							onKeyUp={(event)=>{if(event.key==="Enter" && todo.text!==''){addNewTodo(index), setCounter(counter+1)}}}
-							disabled={index < lastTodoIndex}
+							disabled={todo.disabled}
 						/>
-						{index >= 0 && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id), todo.text!=='' && setCounter(counter-1)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
+						{todo.disabled && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id), setCounter(counter-1)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
 					</div>
 			))}
 		
