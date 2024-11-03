@@ -2,34 +2,27 @@ import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { counter } from "@fortawesome/fontawesome-svg-core";
-
+import {fetchData, posting, deleteTodo } from "../fetching.js";
 
 const Home = () => {
-	const [todos, setTodos] = useState([{ id: 1, "text": "", disabled: false }]) 
+	const [todos, setTodos] = useState([{"label":""}]) 
 	const currentRef = useRef([]);
 	const [counter, setCounter] = useState(0);
-	
 
 	const handleTextChange = (event, index)=>{
 		const newTodo = [...todos]
-		newTodo[index].text = event.target.value;
+		newTodo[index].label = event.target.value;
 		setTodos(newTodo);
 	}
 
-	const addNewTodo = (index)=>{
-		let newTodo = [...todos, {id: todos[index].id+1, "text":"", disabled: false}]
-		newTodo[index].disabled = true;
-		setTodos(newTodo);
+	const addNewTodo = async(index)=>{
+		await posting(todos[index])
+		fetchData(todos, setTodos, setCounter)
 	}
 
-	const removeTodo = (id)=>{
-		const newTodo = todos.filter(todo => todo.id !== id);
-
-		if(todos.length===1){
-			setTodos([{id: 1, "text":""}])
-		}else{
-			setTodos(newTodo);
-		}
+	const removeTodo = async(id)=>{
+		await deleteTodo(id)
+		fetchData(todos, setTodos, setCounter)
 	}
 
 	useEffect(()=>{
@@ -37,6 +30,11 @@ const Home = () => {
 			currentRef.current[todos.length-1].focus();
 		}
 	}, [todos])
+	
+	useEffect(()=>{
+		fetchData(todos, setTodos, setCounter)
+	}, [])
+
 
 	return (
 		<>
@@ -46,14 +44,14 @@ const Home = () => {
 						<div className="dot"></div>
 						<input
 							type="text"
-							value={todo.text}
+							value={todo.label}
 							placeholder={todos.length===1?"No tasks, add a task." : ""}
 							ref={(e)=>(currentRef.current[index] = e)}
 							onChange={(event)=>{handleTextChange(event, index)}}
-							onKeyUp={(event)=>{if(event.key==="Enter" && todo.text!==''){addNewTodo(index), setCounter(counter+1)}}}
+							onKeyUp={(event)=>{if(event.key==="Enter" && todo.label!==''){addNewTodo(index)}}}
 							disabled={todo.disabled}
 						/>
-						{todo.disabled && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id), setCounter(counter-1)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
+						{todo.disabled && <FontAwesomeIcon className="icon" onClick={()=>{removeTodo(todo.id)}} icon={faCircleXmark} size="lg" style={{color: "#e62f0f", marginTop: "18px", marginRight: "10px"}} />}
 					</div>
 			))}
 		
